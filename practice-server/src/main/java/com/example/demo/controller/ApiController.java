@@ -13,6 +13,6 @@ public class ApiController {
 	
 	@GetMapping("/test")
 	public String test() {
-		return "just testing...!";
+		return "just testing...!!";
 	}
 }
