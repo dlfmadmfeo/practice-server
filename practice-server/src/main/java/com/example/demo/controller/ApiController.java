@@ -25,6 +25,11 @@ public class ApiController {
 		return "just testing...!!";
 	}
 	
+	@GetMapping("/test2")
+	public String test2() {
+		return "test2";
+	}
+	
 	@GetMapping("/country/code/{code}")
 	public String printCodeInfo(@PathVariable int code) {
 		COUNTRY country = COUNTRY.AMERICA;		
