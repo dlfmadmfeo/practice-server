@@ -17,7 +17,7 @@ public class ApiController {
 	
 	@GetMapping("/")
 	public String init() {
-		return "안녕 세계야.";
+		return "안녕하세요";
 	}
 	
 	@GetMapping("/test")
