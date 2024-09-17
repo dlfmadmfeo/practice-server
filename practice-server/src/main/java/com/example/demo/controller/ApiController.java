@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins="*")
+//@CrossOrigin(origins="http://www.junhee92kr.com")
 public class ApiController {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
