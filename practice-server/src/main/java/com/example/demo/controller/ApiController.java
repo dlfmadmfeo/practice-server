@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins="*")
 public class ApiController {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
@@ -39,6 +43,7 @@ public class ApiController {
 	@GetMapping("/update/cache")
 	public String updateCacheData() {
 		redisTemplate.opsForValue().set("name", "junhee");
+		redisTemplate.expire("name", 1, TimeUnit.DAYS);
 		return "";
 	}
 	
