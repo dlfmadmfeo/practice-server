@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins="http://www.junhee92kr.com")
+@CrossOrigin(origins="http://junhee92kr.com")
 public class ApiController {
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
@@ -24,14 +24,9 @@ public class ApiController {
 		return "안녕하세요";
 	}
 	
-	@GetMapping("/test")
-	public String test() {
-		return "just testing...!!";
-	}
-	
-	@GetMapping("/test2")
-	public String test2() {
-		return "test2";
+	@GetMapping("/girlfriend/love")
+	public String showLoveToGirlFriend() {
+		return "I Love you♥";
 	}
 	
 	@GetMapping("/country/code/{code}")
