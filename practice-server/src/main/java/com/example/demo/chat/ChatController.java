@@ -40,10 +40,12 @@ public class ChatController {
     	
     	JsonNode jsonNode = objectMapper.readTree(message);
     	String content = jsonNode.get("content").asText();
-    	if (messages.size() > 100) {
-    		messages.clear();
+    	if (!content.isEmpty()) {
+	    	if (messages.size() > 100) {
+	    		messages.clear();
+	    	}
+    		messages.add(content);
     	}
-    	messages.add(content);
     	
     	
     	return messages.toArray(new String[0]);
