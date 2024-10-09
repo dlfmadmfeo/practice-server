@@ -41,7 +41,7 @@ public class ChatController {
     	JsonNode jsonNode = objectMapper.readTree(message);
     	String content = jsonNode.get("content").asText();
     	if (!content.isEmpty()) {
-	    	if (messages.size() > 100) {
+	    	if (messages.size() >= 100) {
 	    		messages.clear();
 	    	}
     		messages.add(content);
