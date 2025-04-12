@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins={"http://localhost:5173", "http://junhee92kr.com"})
+@CrossOrigin(origins={"http://localhost:5173", "http://localhost:3000", "http://junhee92kr.com"})
 public class ApiController {
 	protected void show() {}
 	@Autowired
