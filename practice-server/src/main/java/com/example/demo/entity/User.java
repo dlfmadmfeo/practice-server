@@ -1,25 +1,39 @@
 package com.example.demo.entity;
 
-public class User implements Comparable<Object>  {
-	int age;
-	String name;
-	
-	public User(int age, String name){
-		this.age = age;
-		this.name = name;
-	}
-	
-	public int getAge() {
-		return this.age;
-	}
-	
-	public String getName() {
-		return this.name;
-	}
+import java.time.LocalDateTime;
 
-	@Override
-	public int compareTo(Object o) {
-		User user = (User) o;
-		return this.age - user.getAge();
-	}
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+//@ToString
+public class User  {
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String name;
+	private String password;
+	private String email;
+	private String phone;
+	
+	@CreationTimestamp
+	private LocalDateTime regDate;
+
+	@UpdateTimestamp
+	private LocalDateTime modDate;
+	
+	private LocalDateTime deleteDate;
 }
