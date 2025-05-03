@@ -13,10 +13,11 @@ public class SecurityConfig {
         return http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
-                    "/webjars/**"
+                		"/**"
+//                    "/swagger-ui/**",
+//                    "/v3/api-docs/**",
+//                    "/swagger-resources/**",
+//                    "/webjars/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
