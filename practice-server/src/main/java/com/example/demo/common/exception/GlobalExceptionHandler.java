@@ -13,12 +13,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiResponse.fail(ex.getMessage(), ErrorCode.SERVER_ERROR.getCode()));
+            .body(ApiResponse.fail(ErrorCode.SERVER_ERROR.getCode(), ex.getMessage()));
     }
     
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ApiResponse<Void>> handleBaseException(BaseException ex) {
     	return ResponseEntity.internalServerError()
-    			.body(ApiResponse.fail(ex.getMessage(), ex.getErrorCode().getCode()));
+    			.body(ApiResponse.fail(ex.getErrorCode().getCode(), ex.getMessage()));
     }
 }
