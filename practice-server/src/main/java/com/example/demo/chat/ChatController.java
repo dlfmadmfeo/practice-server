@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,26 +30,45 @@ public class ChatController {
 	@Autowired
 	private RedisTemplate<String, List<String>> redisTemplate;
 
-    @MessageMapping("/hello")
+    @MessageMapping("/send")
     @SendTo("/topic/greetings")
-    public String[] handleHelloMessage(String message) throws JsonMappingException, JsonProcessingException {
-//    	redisTemplate.opsForValue().set(REDIS_CHAT_KEY, null);    	
-//    	redisTemplate.expire(REDIS_CHAT_KEY, 1, TimeUnit.DAYS);
+    public List<String> handleHelloMessage(@Payload ChatMessage chatMessage) throws JsonMappingException, JsonProcessingException {
+    	String content = chatMessage.getContent();
+    	boolean isContentEmpty = content == null || content.trim().isEmpty();
+    	List<String> messages = redisTemplate.opsForValue().get(REDIS_CHAT_KEY);
     	
-//    	List<String> redisMessages = redisTemplate.opsForValue().get(REDIS_CHAT_KEY);
-//    	System.out.println("redisMessages: " + redisMessages);
+    	if (messages == null) {
+            messages = new ArrayList<>();
+            if (isContentEmpty) {
+            	return messages;
+            }
+        }
     	
-    	JsonNode jsonNode = objectMapper.readTree(message);
-    	String content = jsonNode.get("content").asText();
-    	if (!content.isEmpty()) {
-	    	if (messages.size() >= 100) {
-	    		messages.clear();
-	    	}
-    		messages.add(content);
-    	}
+        // 메시지 추가 및 10개 유지
+        if (messages.size() >= 10) {
+            messages.remove(0); // 오래된 것 제거
+        }
+        messages.add(content);
+
+        // Redis에 다시 저장
+        redisTemplate.opsForValue().set(REDIS_CHAT_KEY, messages, 1, TimeUnit.DAYS);
+        // 만료시간 지정
+        redisTemplate.expire(REDIS_CHAT_KEY, 1, TimeUnit.DAYS);
+
+        return messages;
+    	
+//    	redisTemplate.opsForValue().set(REDIS_CHAT_KEY, null);
     	
     	
-    	return messages.toArray(new String[0]);
+//    	JsonNode jsonNode = objectMapper.readTree(chatMessage);
+//    	String content = jsonNode.get("content").asText();
+//    	if (!content.isEmpty()) {
+//	    	if (messages.size() >= 10) {
+//	    		messages.clear();
+//	    	}
+//    		messages.add(content);
+//    	}    	
+//    	return messages.toArray(new String[0]);
     }
 }
 
