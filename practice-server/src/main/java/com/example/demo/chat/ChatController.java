@@ -42,7 +42,7 @@ public class ChatController {
             }
         }    	
         // 메시지 추가 및 10개 유지
-        if (messages.size() >= 100) {
+        if (messages.size() >= 20) {
             messages.remove(0); // 오래된 것 제거
         }
         messages.add(chatMessage);
