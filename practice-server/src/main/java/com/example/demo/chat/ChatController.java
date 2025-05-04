@@ -52,8 +52,6 @@ public class ChatController {
 
         // Redis에 다시 저장
         redisTemplate.opsForValue().set(REDIS_CHAT_KEY, messages, 1, TimeUnit.DAYS);
-        // 만료시간 지정
-        redisTemplate.expire(REDIS_CHAT_KEY, 1, TimeUnit.DAYS);
 
         return messages;
     	
