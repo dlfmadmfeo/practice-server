@@ -40,14 +40,15 @@ public class ChatController {
             if (isContentEmpty) {
             	return messages;
             }
-        }    	
-        // 메시지 추가 및 10개 유지
-        if (messages.size() >= 20) {
-            messages.remove(0); // 오래된 것 제거
         }
-        messages.add(chatMessage);
-        // Redis에 다시 저장
-        redisTemplate.opsForValue().set(REDIS_CHAT_KEY, messages, 1, TimeUnit.DAYS);
+    	if (!isContentEmpty) {
+    		// 메시지 추가 및 10개 유지
+    		if (messages.size() >= 20) {
+            	messages.remove(0); // 오래된 것 제거
+        	}        
+        	messages.add(chatMessage);
+        	redisTemplate.opsForValue().set(REDIS_CHAT_KEY, messages, 1, TimeUnit.DAYS); // Redis에 다시 저장
+        }
 
         return messages;
     }
