@@ -24,6 +24,7 @@ import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtTokenProvider;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +60,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest, HttpServletResponse httpResponse) {
+	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		log.info("loginRequest: {}", loginRequest);
 		TokenDto tokenResponseDto = userService.login(loginRequest);
 		
@@ -72,9 +73,18 @@ public class UserController {
 //		cookie.setPath("/"); // 전체 도메인에 대해서 유효
 //		cookie.setMaxAge((int) cookieMaxAge);
 //		httpResposne.addCookie(cookie);
-		
-	    String cookieValue = String.format("access-token=%s; Path=/; Max-Age=%d; SameSite=None; Secure", tokenResponseDto.getAccessToken(), cookieMaxAge);
-        httpResponse.setHeader("Set-Cookie", cookieValue);
+
+	    boolean isLocal = httpRequest.getServerName().equals("localhost");
+
+	    String cookieValue = String.format(
+	        "access-token=%s; Path=/; Max-Age=%d; SameSite=%s%s",
+	        tokenResponseDto.getAccessToken(),
+	        cookieMaxAge,
+	        isLocal ? "Lax" : "None",
+	        isLocal ? "" : "; Secure"
+	    );
+
+	    httpResponse.setHeader("Set-Cookie", cookieValue);
 		
 		return ApiResponse.success(tokenResponseDto);
 	}
