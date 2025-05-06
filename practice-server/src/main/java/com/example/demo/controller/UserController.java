@@ -74,7 +74,7 @@ public class UserController {
 		
 	    if (isLocal) {
 	        cookieValue = String.format(
-	            "access-token=%s; Max-Age=%d; Path=/; SameSite=Lax",  // Secure 제거
+	            "access-token=%s; Max-Age=%d; Path=/; Domain=localhost; SameSite=Lax",  // Secure 제거
 	            tokenResponseDto.getAccessToken(),
 	            cookieMaxAge
 	        );
