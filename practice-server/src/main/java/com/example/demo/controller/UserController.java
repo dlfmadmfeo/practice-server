@@ -67,12 +67,12 @@ public class UserController {
 		Instant instant = tokenResponseDto.getExpiryDate().atZone(ZoneId.systemDefault()).toInstant();
 		long cookieMaxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
 		
-//		Cookie cookie = new Cookie("access-token", tokenResponseDto.getAccessToken());
-//		cookie.setHttpOnly(true);
-//		cookie.setSecure(true);
-//		cookie.setPath("/"); // 전체 도메인에 대해서 유효
-//		cookie.setMaxAge((int) cookieMaxAge);
-//		httpResposne.addCookie(cookie);
+		Cookie cookie = new Cookie("access-token", tokenResponseDto.getAccessToken());
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/"); // 전체 도메인에 대해서 유효
+		cookie.setMaxAge((int) cookieMaxAge);
+		httpResposne.addCookie(cookie);
 		
 		return ApiResponse.success(tokenResponseDto);
 	}
