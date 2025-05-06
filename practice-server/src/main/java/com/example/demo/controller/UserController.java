@@ -69,7 +69,7 @@ public class UserController {
 		
 		// 직접 Set-Cookie 헤더 설정
 	    String cookieValue = String.format(
-	        "access-token=%s; Max-Age=%d; Path=/; SameSite=None; Secure; HttpOnly",
+	        "access-token=%s; Max-Age=%d; Path=/; SameSite=None; HttpOnly",
 	        tokenResponseDto.getAccessToken(),
 	        cookieMaxAge
 	    );
