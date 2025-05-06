@@ -19,12 +19,12 @@ import com.example.demo.dto.user.UserCreateRequestDto;
 import com.example.demo.dto.user.UserCreateResponseDto;
 import com.example.demo.dto.user.UserLoginRequestDto;
 import com.example.demo.dto.user.UserResponseDto;
+import com.example.demo.service.AuthUser;
 import com.example.demo.service.TokenService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtTokenProvider;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +60,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest, HttpServletResponse httpResposne) {
 		log.info("loginRequest: {}", loginRequest);
 		TokenDto tokenResponseDto = userService.login(loginRequest);
 		
@@ -68,23 +68,11 @@ public class UserController {
 		long cookieMaxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
 		
 		Cookie cookie = new Cookie("access-token", tokenResponseDto.getAccessToken());
-//		cookie.setHttpOnly(true);
-//		cookie.setSecure(true);
-//		cookie.setPath("/"); // 전체 도메인에 대해서 유효
-//		cookie.setMaxAge((int) cookieMaxAge);
-//		httpResposne.addCookie(cookie);
-
-	    boolean isLocal = true; // httpRequest.getServerName().equals("localhost");
-
-	    String cookieValue = String.format(
-	        "access-token=%s; Path=/; Max-Age=%d; SameSite=%s%s",
-	        tokenResponseDto.getAccessToken(),
-	        cookieMaxAge,
-	        isLocal ? "Lax" : "None",
-	        isLocal ? "" : "; Secure"
-	    );
-
-	    httpResponse.setHeader("Set-Cookie", cookieValue);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/"); // 전체 도메인에 대해서 유효
+		cookie.setMaxAge((int) cookieMaxAge);
+		httpResposne.addCookie(cookie);
 		
 		return ApiResponse.success(tokenResponseDto);
 	}
