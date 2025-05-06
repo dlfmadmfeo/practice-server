@@ -74,7 +74,7 @@ public class UserController {
 //		cookie.setMaxAge((int) cookieMaxAge);
 //		httpResposne.addCookie(cookie);
 
-	    boolean isLocal = httpRequest.getServerName().equals("localhost");
+	    boolean isLocal = true; // httpRequest.getServerName().equals("localhost");
 
 	    String cookieValue = String.format(
 	        "access-token=%s; Path=/; Max-Age=%d; SameSite=%s%s",
