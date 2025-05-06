@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,12 @@ import com.example.demo.dto.user.UserCreateRequestDto;
 import com.example.demo.dto.user.UserCreateResponseDto;
 import com.example.demo.dto.user.UserLoginRequestDto;
 import com.example.demo.dto.user.UserResponseDto;
-import com.example.demo.service.AuthUser;
 import com.example.demo.service.TokenService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtTokenProvider;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,9 +59,20 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest) {
+	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest, HttpServletResponse httpResposne) {
 		log.info("loginRequest: {}", loginRequest);
 		TokenDto tokenResponseDto = userService.login(loginRequest);
+		
+		Instant instant = tokenResponseDto.getExpiryDate().atZone(ZoneId.systemDefault()).toInstant();
+		long cookieMaxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
+		
+		Cookie cookie = new Cookie("access-token", tokenResponseDto.getAccessToken());
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/"); // 전체 도메인에 대해서 유효
+		cookie.setMaxAge((int) cookieMaxAge);
+		httpResposne.addCookie(cookie);
+		
 		return ApiResponse.success(tokenResponseDto);
 	}
 	
