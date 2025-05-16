@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.JwtTokenProvider;
 import com.example.demo.utils.PasswordUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,6 +94,24 @@ public class UserService {
 	    tokenService.saveRefreshToken(userId, refreshToken, expiryDate);
 	    
 	    return new TokenDto(accessToken, refreshToken, expiryDate);	
+	}
+	
+	public String getCookieValue(HttpServletRequest httpRequest, TokenDto tokenResponseDto) {
+		Instant instant = tokenResponseDto.getExpiryDate().atZone(ZoneId.systemDefault()).toInstant();
+		long cookieMaxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
+		
+		String origin = httpRequest.getHeader("Origin");
+	    boolean isLocal = origin != null && origin.contains("localhost");
+	    String cookieValue;
+		
+	    if (isLocal) {
+	    	// Secure 제거
+	        cookieValue = String.format("access-token=%s; Max-Age=%d; Path=/; SameSite=Lax", tokenResponseDto.getAccessToken(), cookieMaxAge);
+	    } else {
+	        cookieValue = String.format("access-token=%s; Max-Age=%d; Path=/; Domain=junhee92kr.com; SameSite=None; Secure; HttpOnly", tokenResponseDto.getAccessToken(), cookieMaxAge);
+	    }
+	    
+		return cookieValue;
 	}
 
 }

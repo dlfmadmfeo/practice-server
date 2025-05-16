@@ -62,33 +62,11 @@ public class UserController {
 	
 	@PostMapping("/login")
 	public ApiResponse<TokenDto> login(@RequestBody UserLoginRequestDto loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-		log.info("loginRequest: {}", loginRequest);
 		TokenDto tokenResponseDto = userService.login(loginRequest);
+		String cookieValue = userService.getCookieValue(httpRequest, tokenResponseDto);
 		
-		Instant instant = tokenResponseDto.getExpiryDate().atZone(ZoneId.systemDefault()).toInstant();
-		long cookieMaxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
-		
-		String origin = httpRequest.getHeader("Origin");
-	    boolean isLocal = origin != null && origin.contains("localhost");
-	    String cookieValue;
-		
-	    if (isLocal) {
-	        cookieValue = String.format(
-	            "access-token=%s; Max-Age=%d; Path=/; SameSite=Lax",  // Secure 제거
-	            tokenResponseDto.getAccessToken(),
-	            cookieMaxAge
-	        );
-	    } else {
-	        cookieValue = String.format(
-	            "access-token=%s; Max-Age=%d; Path=/; Domain=junhee92kr.com; SameSite=None; Secure; HttpOnly",
-	            tokenResponseDto.getAccessToken(),
-	            cookieMaxAge
-	        );
-	    }
-	    
 	    httpResponse.setHeader("Set-Cookie", cookieValue);
-		
-		return ApiResponse.success(tokenResponseDto);
+	    return ApiResponse.success(null); // return ApiResponse.success(tokenResponseDto);
 	}
 	
 //    @PostMapping("/token/refresh")
