@@ -47,8 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     	log.info("uri: {}", uri);
     	log.info("method: {}", method);
     	
-    	boolean isSaveUser = uri.equals("/user") && method.equalsIgnoreCase("post");
-    	boolean isLoginUser = uri.equals("/user/login") && method.equalsIgnoreCase("post");
+    	boolean isSaveUser = uri.equals("/user") && (method.equalsIgnoreCase("post") || method.equalsIgnoreCase("options"));
+    	boolean isLoginUser = uri.equals("/user/login") && (method.equalsIgnoreCase("post") || method.equalsIgnoreCase("options"));
     	
     	if (isSaveUser || isLoginUser) {
     		filterChain.doFilter(request, response);
