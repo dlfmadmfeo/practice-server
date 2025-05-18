@@ -70,6 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		        	throw new BaseException(ErrorCode.TOKEN_INVALID);
 		        }
 	            String userId = jwtTokenProvider.getUserId(token);
+	            log.info("userId: {}", userId);
 	            UserResponseDto userResponseDto =  userService.getUserById(Long.valueOf(userId));
 	            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userResponseDto, null, new ArrayList<>());
 	        	SecurityContextHolder.getContext().setAuthentication(authentication);
