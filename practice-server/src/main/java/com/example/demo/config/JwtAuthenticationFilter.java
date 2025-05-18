@@ -40,6 +40,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
+    	
+    	String uri = request.getRequestURI();
+    	String method = request.getMethod();
+    	
+    	log.info("uri: {}", uri);
+    	log.info("method: {}", method);
+    	
+    	boolean isSaveUser = uri.equals("/user") && method.equalsIgnoreCase("post");
+    	boolean isLoginUser = uri.equals("/user/login") && method.equalsIgnoreCase("post");
+    	
+    	if (isSaveUser || isLoginUser) {
+    		filterChain.doFilter(request, response);
+    		return;
+    	}
+    	
     	try {
     		String origin = request.getHeader("host");
     		boolean isLocal = origin != null && origin.contains("localhost");
