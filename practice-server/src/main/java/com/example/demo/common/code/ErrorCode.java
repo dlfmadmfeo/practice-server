@@ -19,6 +19,7 @@ public enum ErrorCode {
     USER_PASSWORD_INCORRECT("USER.4043", "비밀번호가 일치하지 않습니다."),
     
     TOKEN_INVALID("TOKEN.0001", "토큰 정보가 올바르지 않습니다."),
+    TOKEN_NOT_FOUND("TOKEN.0002", "토큰 정보가 존재하지 않습니다."),
     
     DATABASE_CONNECTION_FAILURE("DB.5001", "데이터베이스 연결 실패");
 	

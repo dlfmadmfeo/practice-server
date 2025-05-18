@@ -2,21 +2,30 @@ package com.example.demo.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.demo.common.code.ErrorCode;
+import com.example.demo.common.exception.BaseException;
+import com.example.demo.common.response.ApiResponse;
 import com.example.demo.dto.user.UserResponseDto;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -31,24 +40,60 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-
-        String token = resolveToken(request);
-
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String userId = jwtTokenProvider.getUserId(token);
-            UserResponseDto userResponseDto =  userService.getUserById(Long.valueOf(userId));
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userResponseDto, null, new ArrayList<>());
-            	SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-        filterChain.doFilter(request, response);
+    	try {
+    		String origin = request.getHeader("host");
+    		boolean isLocal = origin != null && origin.contains("localhost");
+	        String token = resolveToken(request);
+	        log.info("isLocal: {}", isLocal);
+	        log.info("token: {}", token);
+	        
+	        if (!isLocal) {
+		        if (token == null) {
+		        	throw new BaseException(ErrorCode.TOKEN_NOT_FOUND);
+		        }
+		        if (!jwtTokenProvider.validateToken(token)) {
+		        	throw new BaseException(ErrorCode.TOKEN_INVALID);
+		        }
+	            String userId = jwtTokenProvider.getUserId(token);
+	            UserResponseDto userResponseDto =  userService.getUserById(Long.valueOf(userId));
+	            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userResponseDto, null, new ArrayList<>());
+	        	SecurityContextHolder.getContext().setAuthentication(authentication);
+	        }	
+	        filterChain.doFilter(request, response);
+    	} catch (BaseException ex) {
+    		handleException(response, ex);
+    	}
+    }
+    
+    private String resolveToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+        	for(Cookie cookie : cookies) {
+        		log.info("cookie: {}", cookie.getName());
+        		if (cookie.getName().equals("access-token")) {
+        			return cookie.getValue();
+        		}
+        	}
+        }        
+        return null;
     }
 
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+// Authorization Bearer 방식. Client에서 Request Header에 Authorization 방식으로 넘겨줘야 함
+//    private String resolveToken(HttpServletRequest request) {
+//        String bearerToken = request.getHeader("Authorization");
+//        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+//            return bearerToken.substring(7);
+//        }
+//        return null;
+//    }
+    
+    private void handleException(HttpServletResponse response, BaseException ex) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+
+        ApiResponse<Void> apiResponse = ApiResponse.fail(ex.getErrorCode().getCode(), ex.getMessage());
+        String json = new ObjectMapper().writeValueAsString(apiResponse);
+
+        response.getWriter().write(json);
     }
 }
