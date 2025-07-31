@@ -22,7 +22,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .authorizeHttpRequests(auth -> auth
-        		.requestMatchers(HttpMethod.OPTIONS).permitAll()
+        		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(
                 		"/**"
 //                    "/swagger-ui/**",
