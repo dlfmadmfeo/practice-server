@@ -66,6 +66,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     		String origin = request.getHeader("host");
     		boolean isLocal = origin != null && origin.contains("localhost");
 	        String token = resolveToken(request);
+	        
+	        log.info("request: {}", request);
+	        log.info("origin: {}", origin);
 	        log.info("isLocal: {}", isLocal);
 	        log.info("token: {}", token);
 	        
