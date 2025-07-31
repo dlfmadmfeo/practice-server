@@ -111,6 +111,10 @@ public class UserService {
 	        cookieValue = String.format("access-token=%s; Max-Age=%d; Path=/; Domain=junhee92kr.com; SameSite=None; Secure; HttpOnly", tokenResponseDto.getAccessToken(), cookieMaxAge);
 	    }
 	    
+	    log.info("[getCookieValue]");
+	    log.info("origin: {}", origin);
+	    log.info("cookieValue: {}", cookieValue);
+	    
 		return cookieValue;
 	}
 
