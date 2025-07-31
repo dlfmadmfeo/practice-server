@@ -22,7 +22,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .authorizeHttpRequests(auth -> auth
-        		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(
                 		"/**"
 //                    "/swagger-ui/**",
@@ -30,8 +29,10 @@ public class SecurityConfig {
 //                    "/swagger-resources/**",
 //                    "/webjars/**"
                 ).permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .cors(cors -> {}) // Spring의 WebMvcConfigurer에서 설정한 CORS 정책을 적용해줌
             .csrf(csrf -> csrf.disable()) // 비활성화 필요 시만 사용
             .httpBasic(httpBasic -> httpBasic.disable())
             .formLogin(form -> form.disable())
