@@ -7,15 +7,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtTokenProvider;
 
 @Configuration
 public class SecurityConfig {
 	
 	private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 	
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, UserService userService) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
     }
 
     @Bean
@@ -36,7 +39,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // 비활성화 필요 시만 사용
             .httpBasic(httpBasic -> httpBasic.disable())
             .formLogin(form -> form.disable())
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userService), UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 }
